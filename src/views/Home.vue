@@ -82,7 +82,6 @@ export default {
         convertedAmt: null
       },
       showCalc: false
-      // localHist: []
     };
   },
 
