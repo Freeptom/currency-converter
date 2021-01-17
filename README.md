@@ -2,6 +2,7 @@
 
 A web application which converts currencies using the daily rate.
 
+
 ## Project setup
 
 ```

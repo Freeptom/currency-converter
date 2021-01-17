@@ -49,7 +49,7 @@
 
       <button @click.prevent="checkForm">Convert</button>
 
-      <div class="calculation" v-if="showCalc">
+      <div class="calculation" v-if="showCalc && errors.length === 0">
         <p>
           <strong>{{ this.record.amount }} {{ this.record.base }} =</strong>
         </p>
@@ -122,6 +122,9 @@ export default {
         this.record.convertedAmt = this.amount;
         return;
       }
+      if (isNaN(parseFloat(this.amount))) {
+        this.errors.push("Please enter only a number");
+      }
       this.fetchRates();
     },
 
@@ -186,7 +189,6 @@ export default {
   border-radius: 1rem;
   padding: 2rem 1rem;
   background: $grey;
-
   @media only screen and (min-width: $tablet-width) {
     margin: 0 auto;
     max-width: 600px;
