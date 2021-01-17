@@ -81,8 +81,8 @@ export default {
         amount: "",
         convertedAmt: null
       },
-      showCalc: false,
-      localHist: []
+      showCalc: false
+      // localHist: []
     };
   },
 
@@ -91,9 +91,8 @@ export default {
   },
 
   mounted() {
-    if (localStorage.history) {
-      // this.saveToHistory(JSON.parse(localStorage.history));
-      this.localHist = JSON.parse(localStorage.history);
+    if (this.history.length === 0 && localStorage.history) {
+      this.captureHistory(JSON.parse(localStorage.history));
     }
   },
 
@@ -155,25 +154,17 @@ export default {
 
     saveToHistory() {
       // pass converted figs to history state
-      // this.captureHistory(this.record);
-      this.localHist.push(this.record);
-      console.log(JSON.stringify(this.localHist));
+      const newRecord = { ...this.record };
+      this.captureHistory(newRecord);
     }
   },
+
   watch: {
     // When history state updates, update local storage too
-    localHist: {
-      handler(newRecords) {
-        // if there isn't a localStorage record yet, create one
-        // if (!localStorage.history) {
-        localStorage.history += JSON.stringify(newRecords);
-        console.log("LOCAL =>" + localStorage.history);
-        // otherwise, append it to the record
-        // } else {
-        //   localStorage.history += JSON.stringify(newRecords);
-        // }
-      },
-      deep: true
+    history: {
+      handler(currentVal) {
+        localStorage.history = JSON.stringify(currentVal);
+      }
     }
   }
 };

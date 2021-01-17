@@ -28,7 +28,9 @@ export default new Vuex.Store({
   mutations: {
     set_currencies: (state, currencies) => (state.currencies = currencies),
     set_rates: (state, rates) => (state.rates = rates),
-    update_history: (state, history) => state.history.push(history)
+    update_history: (state, history) => {
+      state.history.push(history);
+    }
   },
 
   actions: {
