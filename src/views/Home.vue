@@ -174,9 +174,9 @@ export default {
 .errors-list {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  border-left: solid 4px #8d2728;
-  background: #fcb7b8;
-  color: #8d2728;
+  border-left: solid 4px $warning--dark;
+  background: $warning;
+  color: $warning--dark;
   margin-bottom: 2rem;
   border-radius: 0 4px 4px 0;
 }
@@ -185,13 +185,14 @@ export default {
   margin: 0 2rem 2rem 2rem;
   border-radius: 1rem;
   padding: 2rem 1rem;
-  background: #222429;
+  background: $grey;
 
   @media only screen and (min-width: $tablet-width) {
     margin: 0 auto;
     max-width: 600px;
     padding: 2rem 4rem;
   }
+
   &__item {
     margin: 0 0 2rem;
     display: flex;
@@ -205,10 +206,12 @@ export default {
       align-items: center;
     }
   }
+
   label {
     font-weight: 800;
     margin-bottom: 1rem;
   }
+
   select,
   input {
     padding: 0.5rem;
@@ -230,10 +233,12 @@ export default {
       min-width: 220px;
     }
   }
+
   select,
   input::placeholder {
     color: $white;
   }
+
   button {
     display: block;
     width: 100%;
