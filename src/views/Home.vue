@@ -125,7 +125,9 @@ export default {
       if (isNaN(parseFloat(this.amount))) {
         this.errors.push("Please enter a valid number amount");
       }
-      this.fetchRates();
+      if (this.errors.length === 0) {
+        this.fetchRates();
+      }
     },
 
     async fetchRates() {
