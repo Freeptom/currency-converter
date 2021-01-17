@@ -123,7 +123,7 @@ export default {
         return;
       }
       if (isNaN(parseFloat(this.amount))) {
-        this.errors.push("Please enter only a number");
+        this.errors.push("Please enter a valid number amount");
       }
       this.fetchRates();
     },
