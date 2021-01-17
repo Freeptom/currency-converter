@@ -29,7 +29,7 @@ export default new Vuex.Store({
     set_currencies: (state, currencies) => (state.currencies = currencies),
     set_rates: (state, rates) => (state.rates = rates),
     update_history: (state, history) => {
-      state.history.push(history);
+      state.history = history;
     }
   },
 

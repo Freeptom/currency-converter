@@ -154,7 +154,8 @@ export default {
     saveToHistory() {
       // pass converted figs to history state
       const newRecord = { ...this.record };
-      this.captureHistory(newRecord);
+      const newHistory = [...this.history, newRecord];
+      this.captureHistory(newHistory);
     }
   },
 

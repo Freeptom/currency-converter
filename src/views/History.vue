@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="record in history" :key="record">
+        <tr v-for="(record, index) in history" :key="index">
           <td v-for="item in record" :key="item">
             {{ item }}
           </td>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "Home",
@@ -34,8 +34,17 @@ export default {
     return {};
   },
 
+  methods: {
+    ...mapActions(["captureHistory"])
+  },
   computed: {
     ...mapState(["history"])
+  },
+
+  mounted() {
+    if (this.history.length === 0 && localStorage.history) {
+      this.captureHistory(JSON.parse(localStorage.history));
+    }
   }
 };
 </script>
