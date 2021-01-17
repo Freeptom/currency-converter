@@ -15,7 +15,8 @@ export default new Vuex.Store({
   state: {
     defaultCurrency: defaultCurrency,
     currencies: {},
-    rates: {}
+    rates: {},
+    history: []
   },
 
   getters: {
@@ -26,7 +27,8 @@ export default new Vuex.Store({
 
   mutations: {
     set_currencies: (state, currencies) => (state.currencies = currencies),
-    set_rates: (state, rates) => (state.rates = rates)
+    set_rates: (state, rates) => (state.rates = rates),
+    update_history: (state, history) => state.history.push(history)
   },
 
   actions: {
@@ -45,6 +47,14 @@ export default new Vuex.Store({
       try {
         const response = await axios.get(`${base}${suffix}`);
         await commit("set_rates", response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async captureHistory({ commit }, historyItems) {
+      try {
+        commit("update_history", historyItems);
       } catch (error) {
         console.error(error);
       }

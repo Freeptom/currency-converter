@@ -9,33 +9,10 @@
 </template>
 
 <style lang="scss">
-* {
-  box-sizing: border-box;
-  outline-color: $primary--dark;
-}
-html,
-body,
 #app {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  color: $white;
-  font-family: "Open Sans", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#app {
-  // background: rgb(74, 105, 188);
-  // background: linear-gradient(
-  //   45deg,
-  //   rgba(74, 105, 188, 1) 0%,
-  //   rgba(81, 148, 174, 1) 100%
-  // );
+  min-height: 100vh;
   background: $black-mid;
-  padding-top: 2rem;
+  padding: 2rem 0;
 }
 
 #nav {
@@ -71,5 +48,6 @@ h1 {
   text-align: center;
   font-size: 1.5rem;
   font-weight: 800;
+  margin-bottom: 1rem;
 }
 </style>

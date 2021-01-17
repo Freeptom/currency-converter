@@ -12,7 +12,7 @@
 
       <div class="form__item">
         <label for="base-currency">My base currency is</label>
-        <select v-model="base">
+        <select v-model="base" name="base">
           <option disabled value="">Enter base currency</option>
           <!-- set first option to default currency -->
           <option>{{ this.defaultCurrency }}</option>
@@ -27,22 +27,17 @@
         <label for="amount">The amount I have is</label>
         <input
           type="number"
-          id="amount"
           name="amount"
           v-model="amount"
           placeholder="Enter amount to convert"
+          step="0.01"
         />
       </div>
 
       <div class="form__item">
         <label for="target-currency">My target currency is</label>
-        <select
-          id="target"
-          name="target"
-          v-model="target"
-          placeholder="enter target currency"
-        >
-          <option disabled value="">Enter Target currency</option>
+        <select name="target" v-model="target">
+          <option disabled value="">Enter target currency</option>
           <!-- set first option to default currency -->
           <option>{{ this.defaultCurrency }}</option>
           <!-- loop through all other country codes -->
@@ -54,7 +49,16 @@
 
       <button @click.prevent="checkForm">Convert</button>
 
-      <p>Converted amount: {{ this.convertedAmt }}</p>
+      <div class="calculation" v-if="showCalc">
+        <p>
+          <strong>{{ this.record.amount }} {{ this.record.base }} =</strong>
+        </p>
+        <p class="calculation__converted">
+          <strong
+            >{{ this.record.convertedAmt }} {{ this.record.target }}</strong
+          >
+        </p>
+      </div>
     </form>
   </div>
 </template>
@@ -68,10 +72,17 @@ export default {
   data() {
     return {
       errors: [],
-      amount: 0,
       base: "",
       target: "",
-      convertedAmt: null
+      amount: "",
+      record: {
+        base: "",
+        target: "",
+        amount: "",
+        convertedAmt: null
+      },
+      showCalc: false,
+      localHist: []
     };
   },
 
@@ -79,13 +90,20 @@ export default {
     this.getDefaultRates();
   },
 
+  mounted() {
+    if (localStorage.history) {
+      // this.saveToHistory(JSON.parse(localStorage.history));
+      this.localHist = JSON.parse(localStorage.history);
+    }
+  },
+
   computed: {
-    ...mapState(["defaultCurrency", "rates"]),
+    ...mapState(["defaultCurrency", "rates", "history"]),
     ...mapGetters(["codes"])
   },
 
   methods: {
-    ...mapActions(["getDefaultRates", "getNewCurrencyRates"]),
+    ...mapActions(["getDefaultRates", "getNewCurrencyRates", "captureHistory"]),
 
     checkForm() {
       this.errors = [];
@@ -103,7 +121,7 @@ export default {
       }
       if (this.base == this.target) {
         // if base is same as target, return amount entered
-        this.convertedAmt = this.amount;
+        this.record.convertedAmt = this.amount;
         return;
       }
       this.fetchRates();
@@ -111,17 +129,51 @@ export default {
 
     async fetchRates() {
       await this.$store.dispatch("getNewCurrencyRates", this.base);
-      // once rates returned, filter them by target currency
-      this.targetRate(this.target);
+      // once all rates returned, get the rate for target currency
+      this.getTargetRate(this.target, this.base);
     },
 
-    targetRate(target) {
+    getTargetRate(target) {
       const rate = this.rates[target].rate;
-      this.conversion(rate, this.amount);
+      this.calculateRate(rate, this.amount);
     },
 
-    conversion(rate, amount) {
-      this.convertedAmt = (parseFloat(amount) * rate).toFixed(2);
+    calculateRate(rate, amount) {
+      // calculate conversion amount
+      this.record.convertedAmt = (parseFloat(amount) * rate).toFixed(2);
+      this.setRecordFigs();
+    },
+
+    setRecordFigs() {
+      // set fixed figures that will only update on a conversion
+      this.record.base = this.base;
+      this.record.amount = this.amount;
+      this.record.target = this.target;
+      this.showCalc = true;
+      this.saveToHistory();
+    },
+
+    saveToHistory() {
+      // pass converted figs to history state
+      // this.captureHistory(this.record);
+      this.localHist.push(this.record);
+      console.log(JSON.stringify(this.localHist));
+    }
+  },
+  watch: {
+    // When history state updates, update local storage too
+    localHist: {
+      handler(newRecords) {
+        // if there isn't a localStorage record yet, create one
+        // if (!localStorage.history) {
+        localStorage.history += JSON.stringify(newRecords);
+        console.log("LOCAL =>" + localStorage.history);
+        // otherwise, append it to the record
+        // } else {
+        //   localStorage.history += JSON.stringify(newRecords);
+        // }
+      },
+      deep: true
     }
   }
 };
@@ -139,25 +191,38 @@ export default {
 }
 
 .form {
-  margin: 0 auto;
+  margin: 0 2rem 2rem 2rem;
   border-radius: 1rem;
-  padding: 2rem 4rem;
-  max-width: 600px;
+  padding: 2rem 1rem;
   background: #222429;
+
+  @media only screen and (min-width: $tablet-width) {
+    margin: 0 auto;
+    max-width: 600px;
+    padding: 2rem 4rem;
+  }
   &__item {
     margin: 0 0 2rem;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: space-between;
+    &:last-of-type {
+      margin-bottom: 2rem;
+    }
+    @media only screen and (min-width: $tablet-width) {
+      flex-direction: row;
+      align-items: center;
+    }
   }
   label {
     font-weight: 800;
+    margin-bottom: 1rem;
   }
   select,
   input {
     padding: 0.5rem;
+    min-width: 100%;
     min-width: 220px;
-    font-weight: 800;
     font-size: 1rem;
     height: 48px;
     background: none;
@@ -170,10 +235,42 @@ export default {
       background: $black--light;
       border-left: solid 4px $primary--dark;
     }
+    @media only screen and (min-width: 600px) {
+      min-width: 220px;
+    }
   }
   select,
   input::placeholder {
     color: $white;
+  }
+  button {
+    display: block;
+    width: 100%;
+    background: $primary--dark;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 800;
+    border: none;
+    padding: 12px 24px;
+    color: $white;
+    &:hover {
+      cursor: pointer;
+    }
+    @media only screen and (min-width: $tablet-width) {
+      margin: 0 0 0 auto;
+      width: auto;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.calculation {
+  margin: 1rem 0;
+  p {
+    margin: 0;
+  }
+  &__converted {
+    font-size: 2rem;
   }
 }
 </style>
