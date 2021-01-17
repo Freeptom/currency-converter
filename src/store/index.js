@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 const axios = require("axios").create({
-  baseURL: "http://www.floatrates.com/daily/"
+  baseURL: "https://www.floatrates.com/daily/"
 });
 const suffix = ".json";
 
